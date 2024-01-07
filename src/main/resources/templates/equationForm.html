@@ -301,16 +301,22 @@ body::-webkit-scrollbar {
             }
         }
 
-       .solution-table tr.headingsInAll {
-        font-family: 'Roboto', sans-serif;
-            background-color: rgba(0, 255, 0, 0.3);
-            color: #fff;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-            display: grid;
-            place-items: center;
-            min-height: 100vh;
+
+          #bottomRightImage {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            margin: 20px; /* Adjust the margin as needed */
+
+        }
+        #bottomRightImage {
+            width: 100px; /* Set the desired width */
+            height: 100px; /* Set the desired height */
+            transition: transform 0.5s ease-in-out; /* Apply a smooth transition for the jump effect */
+        }
+
+        #bottomRightImage:hover {
+            transform: translateY(-5px); /* Adjust the jump height as needed */
         }
 
   </style>
@@ -352,6 +358,7 @@ body::-webkit-scrollbar {
 <body>
 
 <h2>Equation Solver</h2>
+<img id="bottomRightImage" src="/1.jpg" alt="Finger Pointer" size="20px">
 
 <form id ="equationForm" action="#" th:action="@{/equation-solver/solve}" th:object="${equationModel}" method="post">
 
@@ -547,6 +554,8 @@ body::-webkit-scrollbar {
         <!-- Add more list items if needed -->
     </ul>
 </div>
+
+
 
 </body>
 </html>
