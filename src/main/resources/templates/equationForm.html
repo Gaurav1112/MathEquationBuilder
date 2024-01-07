@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:font-color="http://www.w3.org/1999/xhtml">
+<!-- Add these links to your HTML -->
+<link rel="stylesheet" href="https://unpkg.com/simplebar@5.3.0/dist/simplebar.min.css" integrity="sha384-T5e1V5f0A93ExWZgF8Yq4r3UeIjQOn0F68G9PqGCzA7G0MWCE3UGLA4/3zpCrd1T" crossorigin="anonymous">
+<script src="https://unpkg.com/simplebar@5.3.0/dist/simplebar.min.js" integrity="sha384-dzrH7dJ8r3bhIib2T8L/U2DHet6iWuh/RWy2SxU6D2FDT8BnU/1tnPkGOi0jj1UI" crossorigin="anonymous"></script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equation Solver</title>
+    <style>
+      body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #191d28;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+        }
+
+
+        h2 {
+            color: #4caf50;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #1f2535;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: none;
+            margin: 5px 0;
+            color: #888;
+        }
+
+        input {
+            width: 40px;
+            padding: 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 16px;
+            background-color: #2c3246;
+            color: #4caf50;
+            transition: background-color 0.3s, color 0.3s;
+            font-family: 'Digital', sans-serif;
+        }
+
+        input:hover, input:focus {
+            background-color: #3a4059;
+            color: #fff;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .equation-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .solution-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .solution-table th, .solution-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-weight: 600;
+        }
+
+        .solution-table th {
+            color: #f5f5dc;
+            text-align: center;
+        }
+
+        .solution-table td {
+              margin: 5px;
+            display: inline-block;
+            transition: color 0.9s;
+            font-family: 'cursive', sans-serif;
+            font-weight: bold;
+            font-size: 30px;
+            color: #4caf50; /* Cyan color for the solution font */
+            border-radius: 5%; /* Creates a circular shape */
+            width: 200px; /* Adjust the width as needed */
+            height: 30px; /* Adjust the height as needed */
+            text-align: center;
+            line-height: 2px; /* Center the text vertically */
+            background-color: #000; /* Black color for the circle background */
+            margin: 0 10px; /* Equal margin on both sides of each circle */
+            vertical-align: middle; /* Center vertically within the cell */
+
+
+
+        }
+         .solution-table td.highlight {
+            color: #000; /* Black color for additional highlighting in the second row */
+            background-color: cyan; /* Cyan background color for the second row */
+        }
+        .equation-row label {
+            display: inline-block;
+            width: 20px;
+            font-size: 18px;
+            color: #4caf50;
+        }
+         @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .marquee-container {
+            overflow: hidden;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 5s linear infinite; /* Adjust the duration as needed */
+        }
+        .description-div,
+        .description-div-left,
+        .description-div-left-below,
+        .descripton-div-right-below {
+            background-color: #2c3246;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border: 2px solid #4caf50;
+            overflow-y: auto;
+            max-height: 200px;
+            scrollbar-width: thin;
+            scrollbar-color: #4caf50 #2c3246;
+            margin-bottom: 20px;
+        }
+
+        .description-div h3,
+        .description-div-left,
+        .description-div-left-below,
+        .descripton-div-right-below h3 {
+            color: #4caf50;
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .description-value {
+            font-family: cursive;
+            font-size: 16px;
+            color: #4caf50;
+            list-style-type: square;
+            padding-left: 20px;
+            margin: 0;
+        }
+        .description-div-left {
+            top: 100px;
+            left: 20px;
+
+        }
+        .description-div-left-below{
+            top:400px;
+            left:20px;
+        }
+        .descripton-div-right-below{
+        top:380px;
+        right:20px;
+        }
+         .description-div::-webkit-scrollbar, .description-div-left::-webkit-scrollbar, .description-div-left-below::-webkit-scrollbar, .descripton-div-right-below::-webkit-scrollbar {
+            width: 8px; /* Set the width of the scrollbar */
+        }
+
+        .description-div::-webkit-scrollbar-thumb, .description-div-left::-webkit-scrollbar-thumb,.description-div-left-below::-webkit-scrollbar-thumb, .descripton-div-right-below::-webkit-scrollbar-thumb {
+            background-color: #4caf50; /* Set scrollbar thumb color */
+            border-radius: 10px; /* Rounded thumb corners */
+            height:20px;
+        }
+         .scroll-pointer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 20px;
+            background-color: #4caf50;
+            border-radius: 10px;
+            opacity: 0; /* Initially hidden */
+            transition: opacity 0.3s;
+            pointer-events: none; /* Allow interactions with elements underneath */
+        }
+
+        .description-div:hover .scroll-pointer,
+        .description-div-left-below:hover .scroll-pointer,
+        .description-div-left:hover .scroll-pointer,
+         .descripton-div-right-below:hover .scroll-pointer {
+            opacity: 0; /* Show the scroll pointer on hover */
+        }
+
+        .scroll-pointer::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 20px;
+            background-color: #2c3246;
+            margin: 15px auto;
+            border-radius: 5px;
+        }
+         .scrollable-container:hover .scroll-pointer {
+            opacity: 1;
+        }
+        .scroll-pointer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            display: none;
+            animation: bounce 1s infinite alternate;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+         .scroll-pointer::before {
+            content: '\2193'; /* Unicode arrow down character */
+            font-size: 24px;
+            line-height: 40px;
+            text-align: center;
+            color: #fff;
+            display: block;
+        }
+        .scrollable-container {
+    height: 100vh; /* Adjust the height as needed */
+    overflow-y: scroll; /* Enable vertical scrolling within the container */
+}
+
+        .scroll-pointer:hover {
+            cursor: pointer;
+        }
+
+        .scroll-pointer:active {
+            background-color: #45a049; /* Change color on click */
+        }
+         button.reset-button {
+            background-color: #f44336; /* Red color for reset button */
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        button.reset-button:hover {
+            background-color: #d32f2f;
+        }
+        body::-webkit-scrollbar-thumb {
+    background-color: transparent; /* Set the scrollbar thumb color to transparent */
+}
+body::-webkit-scrollbar {
+    width: 12px; /* Adjust the width as needed */
+}
+  @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+       .solution-table tr.headingsInAll {
+        font-family: 'Roboto', sans-serif;
+            background-color: rgba(0, 255, 0, 0.3);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+        }
+
+  </style>
+    <script>
+ document.addEventListener('DOMContentLoaded', function () {
+        // Function to reset the form
+        function resetForm() {
+            const form = document.getElementById('equationForm');
+            if (form) {
+
+                 window.location.href = '/equation-form';
+            }
+        }
+
+        // Attach the resetForm function to the click event of the Reset button
+        const resetButton = document.getElementById('resetButton');
+        if (resetButton) {
+            resetButton.addEventListener('click', resetForm);
+        }
+    });
+
+       function scrollToBottom() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const scrollableContainer = document.querySelector('.scrollable-container');
+            const scrollPointer = document.querySelector('.scroll-pointer');
+
+            if (scrollableContainer.scrollHeight > window.innerHeight) {
+                scrollPointer.style.display = 'block';
+            }
+        });
+</script>
+</head>
+<body>
+
+<h2>Equation Solver</h2>
+
+<form id ="equationForm" action="#" th:action="@{/equation-solver/solve}" th:object="${equationModel}" method="post">
+
+    <div class="equation-row">
+
+        <input type="text" th:field="*{coefficients[0][0]}" name="x1" placeholder="x" />
+        <label>X + </label>
+
+        <input type="text" th:field="*{coefficients[0][1]}" name="y1" placeholder="y" />
+        <label>Y + </label>
+
+        <input type="text" th:field="*{coefficients[0][2]}" name="z1" placeholder="z" />
+        <label>Z + </label>
+        <label>=</label>
+        <input type="text" th:field="*{constants[0]}" name="a1" placeholder="a" />
+    </div>
+
+    <div class="equation-row">
+
+        <input type="text" th:field="*{coefficients[1][0]}" name="x1" placeholder="x" />
+        <label>X + </label>
+
+        <input type="text" th:field="*{coefficients[1][1]}" name="y1" placeholder="y" />
+        <label>Y + </label>
+
+        <input type="text" th:field="*{coefficients[1][2]}" name="z1" placeholder="z" />
+        <label>Z + </label>
+        <label>=</label>
+        <input type="text" th:field="*{constants[1]}" name="a1" placeholder="a" />
+    </div>
+
+    <div class="equation-row">
+
+        <input type="text" th:field="*{coefficients[2][0]}" name="x1" placeholder="x" />
+        <label>X + </label>
+
+        <input type="text" th:field="*{coefficients[2][1]}" name="y1" placeholder="y" />
+        <label>Y + </label>
+
+        <input type="text" th:field="*{coefficients[2][2]}" name="z1" placeholder="z" />
+        <label>Z + </label>
+        <label>=</label>
+        <input type="text" th:field="*{constants[2]}" name="a1" placeholder="a" />
+    </div>
+
+    <button type="submit">Solve Equations</button>
+    <button type="reset" id="resetButton" class="reset-button">Reset</button>
+</form>
+
+
+
+<div class="result" th:if="${solution}">
+
+
+    <table class="solution-table">
+        <tr name = "headingsInAll">
+            <td class="marquee-container" name = "headingsInAll"><div class="marquee-content"><p th:text="X" class="highlight"> X</p></div></td>
+            <td class="marquee-container" name = "headingsInAll"><div class="marquee-content"><p th:text="Y" class="highlight"> Y</p></div></td>
+            <td class="marquee-container" name = "headingsInAll"><div class="marquee-content"><p th:text="Z" class="highlight"> Z</p></div></td>
+
+        </tr>
+
+        <tr>
+            <td class="marquee-container"><div class="marquee-content"><p th:text="${solution[0]}" class="highlight"> X</p></div></td>
+            <td class="marquee-container"><div class="marquee-content"><p th:text="${solution[1]}" class="highlight"> Y</p></div></td>
+            <td class="marquee-container"><div class="marquee-content"><p th:text="${solution[2]}" class="highlight"> Z</p></div></td>
+
+        </tr>
+
+    </table>
+
+
+</div>
+<div class="result" th:if="${adjugate}">
+    <table class="solution-table" th:if="${transpose}">
+        <tr>
+            <td ><div><p th:text="Adjoint" class="highlight"> Adjugate</p></div></td>
+            <td ><div><p th:text="Transpose" class="highlight"> Transpose</p></div></td>
+
+        </tr>
+
+        <tr>
+            <td ><div ><p th:text="${adjugate[0][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${adjugate[0][1]}" class="highlight"> </p></div></td>
+            <td ><div><p th:text="${adjugate[0][2]}" class="highlight"> </p></div></td>
+
+            <td ><div ><p th:text="${transpose[0][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${transpose[0][1]}" class="highlight"> </p></div></td>
+            <td ><div><p th:text="${transpose[0][2]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+        <tr>
+            <td ><div ><p th:text="${adjugate[1][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${adjugate[1][1]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${adjugate[1][2]}" class="highlight"> </p></div></td>
+
+            <td ><div ><p th:text="${transpose[1][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${transpose[1][1]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${transpose[1][2]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+        <tr>
+            <td ><div ><p th:text="${adjugate[2][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${adjugate[2][1]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${adjugate[2][2]}" class="highlight"> </p></div></td>
+
+            <td ><div ><p th:text="${transpose[2][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${transpose[2][1]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${transpose[2][2]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+
+    </table>
+
+
+</div>
+<div class="result" th:if="${inverse}">
+    <table class="solution-table">
+        <tr>
+            <td ><div><p th:text="Inverse" class="highlight"> Inverse</p></div></td>
+
+        </tr>
+
+        <tr>
+            <td ><div ><p th:text="${inverse[0][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${inverse[0][1]}" class="highlight"> </p></div></td>
+            <td ><div><p th:text="${inverse[0][2]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+        <tr>
+            <td ><div ><p th:text="${inverse[1][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${inverse[1][1]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${inverse[1][2]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+        <tr>
+            <td ><div ><p th:text="${inverse[2][0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${inverse[2][1]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${inverse[2][2]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+
+    </table>
+
+
+</div>
+
+<div class="result" th:if="${area}">
+    <table class="solution-table" th:if="${determinant}">
+        <tr>
+            <td class="marquee-container"><div class="marquee-content"><p class="highlight"> Area Of triangle</p></div></td>
+            <td class="marquee-container"><div class="marquee-content"><p class="highlight"> Derterminant</p></div></td>
+
+        </tr>
+        <tr>
+            <td class="marquee-container"><div class="marquee-content"><p th:text="${area}" class="highlight"> X</p></div></td>
+            <td class="marquee-container"><div class="marquee-content"><p th:text="${determinant}" class="highlight"> </p></div></td>
+
+        </tr>
+    </table>
+</div>
+<div class="description-div" th:if="${descriptValue}">
+    <h3 text-align="center"  >Description</h3>
+    <p class="description-value" th:text="${descriptValue}"></p>
+</div>
+<div class="description-div-left" th:if="${topLeftValue}">
+    <h3>Properties Of Adjoint</h3>
+    <ul class="description-value">
+        <li th:text="${topLeftValue}"></li>
+        <!-- Add more list items if needed -->
+    </ul>
+</div>
+
+<div class="description-div-left-below" th:if="${topLeftValue}">
+    <h3>Properties Of Adjoint Below</h3>
+    <ul class="description-value">
+        <li th:text="${topLeftValue}"></li>
+        <!-- Add more list items if needed -->
+    </ul>
+</div>
+<div class="scroll-pointer" onclick="scrollToBottom()"></div>
+
+<div class="descripton-div-right-below" th:if="${descriptValue}">
+    <h3>Properties Of Adjoint Below</h3>
+    <ul class="description-value">
+        <li th:text="${descriptValue}"></li>
+        <!-- Add more list items if needed -->
+    </ul>
+</div>
+
+</body>
+</html>
