@@ -17,6 +17,6 @@ public class EquationResult {
     private int[][] transpose;
     private  String descriptValue;
     private String topLeftValue;
-    private int[][] zigzagMatrix;
+    private int[] zigzagMatrix;
 
 }

@@ -337,6 +337,22 @@ body::-webkit-scrollbar {
             resetButton.addEventListener('click', resetForm);
         }
     });
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to reset the form
+        function resetForm() {
+            const form = document.getElementById('equationForm1');
+            if (form) {
+
+                 window.location.href = '/equation-form';
+            }
+        }
+
+        // Attach the resetForm function to the click event of the Reset button
+        const resetButton = document.getElementById('resetButton');
+        if (resetButton) {
+            resetButton.addEventListener('click', resetForm);
+        }
+    });
 
        function scrollToBottom() {
             window.scrollTo({
@@ -353,6 +369,7 @@ body::-webkit-scrollbar {
                 scrollPointer.style.display = 'block';
             }
         });
+
 </script>
 </head>
 <body>
@@ -405,8 +422,42 @@ body::-webkit-scrollbar {
     </div>
 
     <button type="submit">Solve Equations</button>
-    <button type="reset" id="resetButton" class="reset-button">Reset</button>
+    <button type="reset" onclick="storeEquationModelData()" id="resetButton" class="reset-button">Reset</button>
 </form>
+<form id ="equationForm1" action="#" th:action="@{/matrix-traversal}" th:object="${equationModel1}" method="post">
+    <button type="submit" >ZigZag For A</button>
+</form>
+<div class="descripton-div-right-below" th:if="${zigzagTraversal}">
+    <table class="solution-table">
+        <tr>
+            <td ><div><p  class="highlight"> ZigZag</p></div></td>
+
+        </tr>
+
+        <tr>
+            <td ><div ><p th:text="${zigzagTraversal[0]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${zigzagTraversal[1]}" class="highlight"> </p></div></td>
+            <td ><div><p th:text="${zigzagTraversal[2]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+        <tr>
+            <td ><div ><p th:text="${zigzagTraversal[3]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${zigzagTraversal[4]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${zigzagTraversal[5]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+        <tr>
+            <td ><div ><p th:text="${zigzagTraversal[6]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${zigzagTraversal[7]}" class="highlight"> </p></div></td>
+            <td ><div ><p th:text="${zigzagTraversal[9]}" class="highlight"> </p></div></td>
+
+
+        </tr>
+
+    </table>
+</div>
 
 
 
@@ -547,13 +598,7 @@ body::-webkit-scrollbar {
 </div>
 <div class="scroll-pointer" onclick="scrollToBottom()"></div>
 
-<div class="descripton-div-right-below" th:if="${descriptValue}">
-    <h3>Properties Of Adjoint Below</h3>
-    <ul class="description-value">
-        <li th:text="${descriptValue}"></li>
-        <!-- Add more list items if needed -->
-    </ul>
-</div>
+
 
 
 
