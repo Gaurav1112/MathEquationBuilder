@@ -18,5 +18,6 @@ public class EquationResult {
     private  String descriptValue;
     private String topLeftValue;
     private int[] zigzagMatrix;
+    int[][] inverseDiagonalMatrix;
 
 }

@@ -3,6 +3,7 @@ package com.project.MathEquationBuilder.controller;
 import com.project.MathEquationBuilder.model.EquationModel;
 import com.project.MathEquationBuilder.service.EquationSolverService;
 import com.project.MathEquationBuilder.model.EquationResult;
+import com.project.MathEquationBuilder.service.InverseMajorMinorMatrixService;
 import com.project.MathEquationBuilder.service.ZigzagMatrixTraversalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,11 +19,13 @@ public class EquationController {
     private final EquationSolverService equationSolverService;
 
     private final ZigzagMatrixTraversalService zigzagMatrixTraversalService;
+    private  final InverseMajorMinorMatrixService inverseMajorMinorMatrixService;
 
     @Autowired
-    public EquationController(EquationSolverService equationSolverService, ZigzagMatrixTraversalService zigzagMatrixTraversalService) {
+    public EquationController(EquationSolverService equationSolverService, ZigzagMatrixTraversalService zigzagMatrixTraversalService, InverseMajorMinorMatrixService inverseMajorMinorMatrixService) {
         this.equationSolverService = equationSolverService;
         this.zigzagMatrixTraversalService = zigzagMatrixTraversalService;
+        this.inverseMajorMinorMatrixService = inverseMajorMinorMatrixService;
     }
 
     @GetMapping("/equation-form")
@@ -42,6 +45,21 @@ public class EquationController {
             model.addAttribute("error", "An error occurred while solving the equations.");
         }
         model.addAttribute("equationModel1", equationModel);
+        return "equationForm";
+    }
+    @PostMapping("/majMinMatrix")
+    public String matrixMajorMinorDiagonalInverse(EquationModel equationModel, Model model){
+        try{
+            int[][] result = inverseMajorMinorMatrixService.inverseMajorMinorMatrix(coefficients);
+            EquationResult equationResult = new EquationResult();
+            equationResult.setInverseDiagonalMatrix(result);
+            if (equationResult!=null) {
+                model.addAttribute("inverseDiagonalMatrix", equationResult.getInverseDiagonalMatrix());
+            }
+        } catch(Exception e){
+            model.addAttribute("error", "An error occured while solving the equations.");
+        }
+        model.addAttribute("equationModel2", equationModel);
         return "equationForm";
     }
 
